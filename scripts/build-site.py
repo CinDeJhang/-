@@ -13,10 +13,12 @@ for source in files:
         for dependency in re.findall(r"from\s+['\"](\./[^'\"]+)['\"]", source.read_text()):
             if (source.parent / dependency).resolve() not in files:
                 raise RuntimeError(f'Missing runtime dependency: {dependency}')
-for previous in output.iterdir():
-    if previous.is_file():
-        previous.unlink()
-for source in files:
-    shutil.copy2(source, output / source.name)
+for destination in [output, output / 'tcvsinfo']:
+    destination.mkdir(exist_ok=True)
+    for previous in destination.iterdir():
+        if previous.is_file():
+            previous.unlink()
+    for source in files:
+        shutil.copy2(source, destination / source.name)
 (output / '.nojekyll').touch()
-print(f'Public game ready: {output} ({len(files)} runtime files)')
+print(f'Public game ready at / and /tcvsinfo/: {output} ({len(files)} runtime files per route)')
