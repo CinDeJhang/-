@@ -1,0 +1,24 @@
+export const fixedCircuits=[{id:'A',type:'series'},{id:'B',type:'parallel'}];
+export function normalizeCircuitAnswers(saved){return Object.fromEntries(fixedCircuits.map(c=>[c.id,['series','parallel'].includes(saved?.[c.id])?saved[c.id]:null]))}
+export function checkCircuitsMission(answers){
+ const missing=fixedCircuits.filter(c=>!['series','parallel'].includes(answers?.[c.id]));
+ const correct=Object.fromEntries(fixedCircuits.map(c=>[c.id,answers?.[c.id]===c.type]));
+ if(missing.length)return {ok:false,correct,message:`請先替電路 ${missing.map(c=>c.id).join('、')} 選擇「串聯」或「並聯」。`};
+ const wrong=fixedCircuits.filter(c=>!correct[c.id]);
+ return {ok:wrong.length===0,correct,message:wrong.length?`電路 ${wrong.map(c=>c.id).join('、')} 還要再觀察：從電源＋端出發，電流是依序通過兩顆燈泡，還是分成兩條支路後回到－端？`:'任務完成！電路 A 是串聯，電路 B 是並聯。你已找出兩種電路的差別！'};
+}
+// Columns have separate five-hole strips above and below the center trench.
+// Lamp leads and jumper ends use the same columns; power rails are independent.
+export function breadboardCircuit(type){
+ if(!['series','parallel'].includes(type))throw Error('未知電路類型');
+ let svg=`<svg viewBox="0 0 720 480" role="img" aria-label="兩顆燈泡固定接在麵包板上，並連接已開啟的 6 伏特直流電源供應器"><defs><radialGradient id="bulb-glow-${type}"><stop stop-color="#ffe487" stop-opacity="${type==='series'?'.45':'.8'}"/><stop offset="1" stop-color="#ffe487" stop-opacity="0"/></radialGradient></defs><rect width="720" height="480" rx="15" fill="#eaf0e2"/><rect x="30" y="18" width="258" height="80" rx="11" fill="#5b7065"/><rect x="46" y="30" width="123" height="44" rx="4" fill="#d4e7c5"/><text x="108" y="60" text-anchor="middle" font-family="monospace" font-size="28" fill="#3f5f43">6.0 V</text><text x="188" y="46" font-size="13" fill="#e8eddb">直流電源供應器</text><circle cx="191" cy="64" r="4" fill="#a4cc84"/><text x="202" y="68" font-size="11" fill="#e8eddb">OUTPUT ON</text><circle cx="85" cy="108" r="9" fill="#be7560" stroke="#fff4d9" stroke-width="3"/><circle cx="165" cy="108" r="9" fill="#48615b" stroke="#fff4d9" stroke-width="3"/><text x="85" y="91" text-anchor="middle" fill="#fff8e8" font-size="16">＋</text><text x="165" y="91" text-anchor="middle" fill="#fff8e8" font-size="16">－</text><text x="337" y="53" fill="#5f795c" font-size="17">兩顆相同規格的燈泡</text><text x="337" y="79" fill="#8b997f" font-size="13">接線已固定，請觀察導線的路徑。</text><rect x="30" y="145" width="660" height="290" rx="15" fill="#faf7e9" stroke="#cbd4bc" stroke-width="3"/><rect x="74" y="154" width="599" height="37" rx="5" fill="#f4e5d9"/><rect x="74" y="399" width="599" height="34" rx="5" fill="#e1e9e5"/><path d="M100 174H660" stroke="#c17b62" stroke-width="3"/><path d="M100 416H660" stroke="#6b8d85" stroke-width="3"/><text x="49" y="180" fill="#bb7058" font-size="17">＋</text><text x="49" y="422" fill="#5a7b70" font-size="17">－</text><rect x="70" y="290" width="600" height="16" rx="4" fill="#e6e6d5"/><text x="52" y="263" fill="#9b9f88" font-size="11">a–e</text><text x="52" y="350" fill="#9b9f88" font-size="11">f–j</text>`;
+ for(let x=100;x<=660;x+=20){svg+=`<path d="M${x} 230V278M${x} 318V366" stroke="#cad0bc" stroke-width="5" stroke-linecap="round"/>`;for(const y of [174,230,242,254,266,278,318,330,342,354,366,416])svg+=`<circle cx="${x}" cy="${y}" r="2.8" fill="#8b9883"/>`}
+ svg+=`<g fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M85 108V174H100" stroke="#bf725a"/><path d="M165 108H706V416H660" stroke="#4f7165"/>`;
+ if(type==='series')svg+=`<path d="M200 174V254" stroke="#bf725a"/><path d="M280 254V198H440V254" stroke="#bd9b57"/><path d="M520 254H620V416" stroke="#4f7165"/>`;
+ else svg+=`<path d="M200 174V254M440 174V254" stroke="#bf725a"/><path d="M280 254V416M520 254V416" stroke="#4f7165"/>`;
+ svg+='</g>';
+ const terminals=type==='series'?[[100,174],[200,174],[200,254],[280,254],[440,254],[520,254],[620,416],[660,416]]:[[100,174],[200,174],[440,174],[200,254],[280,254],[440,254],[520,254],[280,416],[520,416],[660,416]];
+ for(const [x,y]of terminals)svg+=`<circle cx="${x}" cy="${y}" r="5" fill="#3e5e4d" stroke="#fff9e9" stroke-width="1.5"/>`;
+ for(const [i,x]of [240,480].entries())svg+=`<g><circle cx="${x}" cy="236" r="49" fill="url(#bulb-glow-${type})"/><path d="M${x-8} 260V270H${x-40}V278M${x+8} 260V270H${x+40}V278" fill="none" stroke="#7f8f79" stroke-width="4"/><circle cx="${x}" cy="235" r="26" fill="${type==='series'?'#f6dc8c':'#ffe17a'}" fill-opacity=".85" stroke="#ae9658" stroke-width="2.5"/><path d="M${x-10} 242L${x-4} 229L${x+4} 242L${x+10} 229" fill="none" stroke="#b68d39" stroke-width="2"/><rect x="${x-12}" y="257" width="24" height="9" rx="2" fill="#9b9d86"/><text x="${x}" y="326" text-anchor="middle" fill="#69795f" font-size="14">燈泡 ${i+1}</text></g>`;
+ return svg+`<text x="360" y="461" text-anchor="middle" fill="#8c967e" font-size="12">灰線表示每五孔內部相通；跨接導線只有端點接入孔位。</text></svg>`;
+}

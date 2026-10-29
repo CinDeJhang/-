@@ -1,0 +1,6 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {gateOutput,truthRows,checkLogicMission,initialLogicInputs,normalizeLogicInputs} from '../logic-practice.mjs';
+test('AND, OR, NOT match their complete truth tables',()=>{assert.deepEqual(truthRows('AND').map(r=>r.output),[0,0,0,1]);assert.deepEqual(truthRows('OR').map(r=>r.output),[0,1,1,1]);assert.deepEqual(truthRows('NOT').map(r=>r.output),[1,0]);assert.equal(gateOutput('OR',[1,1]),1)});
+test('only the requested combination passes among all 32 switch configurations',()=>{const successes=[];for(let n=0;n<32;n++){const bits=Array.from({length:5},(_,i)=>(n>>i)&1),inputs={AND:bits.slice(0,2),OR:bits.slice(2,4),NOT:bits.slice(4)};if(checkLogicMission(inputs).ok)successes.push(inputs)}assert.deepEqual(successes,[{AND:[1,1],OR:[0,0],NOT:[1]}]);assert.equal(checkLogicMission(initialLogicInputs()).ok,false)});
+test('malformed inputs never pass and saved switches are normalized',()=>{assert.equal(checkLogicMission({AND:[1,1],OR:[0,0],NOT:[]}).ok,false);assert.equal(checkLogicMission({AND:[1,1],OR:[0,0],NOT:['1']}).ok,false);assert.throws(()=>gateOutput('AND',[1]));assert.throws(()=>truthRows('XOR'));assert.deepEqual(normalizeLogicInputs({AND:[1,1],OR:[5,0],NOT:[true]}),{AND:[1,1],OR:[1,0],NOT:[0]})});

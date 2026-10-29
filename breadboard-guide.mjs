@@ -1,0 +1,21 @@
+export const breadboardTopics=[
+ {id:'holes',title:'① 同一組五孔',heading:'同欄的五個孔，裡面是接在一起的。',text:'圖中藍色的 a9、b9、c9、d9、e9 屬於同一組，內部金屬片讓它們相通。旁邊第 10 欄是另一組，與第 9 欄不相通。'},
+ {id:'trench',title:'② 中央溝槽',heading:'中間有溝槽，上下兩組不相通。',text:'第 9 欄的 a～e 是一組，f～j 是另一組。即使看起來排在同一條直線上，e9 和 f9 仍不相通；需要另外接線才能連起來。'},
+ {id:'rails',title:'③ 電源軌',heading:'沿著＋、－標線的一整排，是電源軌。',text:'在這塊示意板上，＋電源軌的孔彼此相通，－電源軌的孔也彼此相通，但＋與－互不相通。電源軌與中央五孔區也不會自動連接。'},
+ {id:'jumper',title:'④ 跨接導線',heading:'跨接線，能把原本分開的接點連起來。',text:'這條紅色跨接線把＋電源軌接到第 9 欄的 c9，因此同組的 a9～e9 也連上了＋電源軌。導線只有兩端插入孔位，途中經過其他孔不表示有接上。'}
+];
+function holeGroup(hole){if(typeof hole!=='string')throw Error('孔位名稱無效');const rail=/^(plus|minus)([1-9]|[12]\d|3[0-2])$/.exec(hole);if(rail)return rail[1];const point=/^([a-j])([1-9]|[12]\d|3[0-2])$/.exec(hole);if(!point)throw Error('孔位名稱無效');return `${point[1]<='e'?'upper':'lower'}-${point[2]}`}
+export function breadboardHolesConnected(first,second){return holeGroup(first)===holeGroup(second)}
+export function breadboardGuideSvg(topic='holes'){
+ if(!breadboardTopics.some(t=>t.id===topic))throw Error('未知麵包板教學主題');
+ const holes=topic==='holes',trench=topic==='trench',rails=topic==='rails',jumper=topic==='jumper';
+ let svg=`<svg viewBox="0 0 900 470" role="img" aria-label="麵包板透視示意：每一欄上下各有獨立五孔群組，中央溝槽分隔，正負電源軌各自相通"><rect width="900" height="470" rx="16" fill="#eaf0e2"/><text x="450" y="39" text-anchor="middle" fill="#55714f" font-size="20">麵包板：插入元件腳，就能建立連接</text><rect x="80" y="72" width="740" height="346" rx="18" fill="#faf7e9" stroke="#c9d4bb" stroke-width="3"/><rect x="120" y="89" width="662" height="32" rx="6" fill="${rails?'#f5d7c5':'#f2e6dc'}"/><rect x="120" y="364" width="662" height="32" rx="6" fill="${rails?'#c5dee8':'#dfe8e4'}"/><path d="M140 105H760" stroke="#bd745f" stroke-width="${rails?6:3}"/><path d="M140 380H760" stroke="#648d9a" stroke-width="${rails?6:3}"/><text x="96" y="112" fill="#b56c54" font-size="23">＋</text><text x="96" y="388" fill="#577e8e" font-size="23">－</text><rect x="120" y="229" width="662" height="23" rx="6" fill="${trench?'#b9cbd4':'#e1e5d3'}" ${trench?'stroke="#658594" stroke-width="3"':''}/><text x="640" y="246" text-anchor="middle" font-size="13" fill="#83917a">中央溝槽</text>`;
+ if(holes||trench||jumper)svg+=`<rect x="289" y="149" width="22" height="77" rx="10" fill="#d0e3ed" stroke="#5c92ad" stroke-width="2"/>`;
+ if(holes)svg+=`<rect x="312" y="149" width="17" height="77" rx="8" fill="#f1e2bd" stroke="#c0a369"/>`;
+ if(trench)svg+=`<rect x="289" y="255" width="22" height="77" rx="10" fill="#eadac5" stroke="#bd9871" stroke-width="2"/><path d="M292 241L308 241" stroke="#9b6756" stroke-width="4"/>`;
+ for(let x=140;x<=760;x+=20){const selected=(x===300&&(holes||trench||jumper)),line=selected?'#6598ad':'#c9d0bb';svg+=`<path d="M${x} 159V215" stroke="${line}" stroke-width="${selected?6:4}" stroke-linecap="round"/><path d="M${x} 265V321" stroke="${x===300&&trench?'#bb9369':'#c9d0bb'}" stroke-width="${x===300&&trench?6:4}" stroke-linecap="round"/>`;for(const y of [105,159,173,187,201,215,265,279,293,307,321,380])svg+=`<circle cx="${x}" cy="${y}" r="3.1" fill="${selected&&y>=159&&y<=215?'#3d7a99':'#8e9c86'}"/>`;const n=(x-140)/20+1;if(n===1||n%4===1||n===32)svg+=`<text x="${x}" y="142" text-anchor="middle" fill="${n===9?'#4a7e9b':'#939d85'}" font-size="${n===9?14:10}" font-weight="${n===9?'bold':'normal'}">${n}</text>`}
+ for(const [i,y]of [159,173,187,201,215,265,279,293,307,321].entries())svg+=`<text x="110" y="${y+4}" text-anchor="middle" fill="#8e9981" font-family="monospace" font-size="12">${'abcdefghij'[i]}</text>`;
+ if(jumper)svg+=`<path d="M300 105H265V187H300" fill="none" stroke="#c46f50" stroke-width="6" stroke-linejoin="round"/><circle cx="300" cy="105" r="5" fill="#c46f50" stroke="#fff7e4" stroke-width="2"/><circle cx="300" cy="187" r="5" fill="#c46f50" stroke="#fff7e4" stroke-width="2"/>`;
+ const marker=holes?[345,187,1]:trench?[450,240,2]:rails?[797,105,3]:[234,145,4];svg+=`<circle cx="${marker[0]}" cy="${marker[1]}" r="15" fill="#52765c"/><text x="${marker[0]}" y="${marker[1]+5}" text-anchor="middle" fill="#fff9e9" font-size="16" font-weight="bold">${marker[2]}</text><text x="450" y="448" text-anchor="middle" fill="#7d8d72" font-size="13">灰線是內部金屬片的透視示意；真實麵包板表面通常看不到。</text></svg>`;
+ return svg;
+}
