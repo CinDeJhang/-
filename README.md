@@ -126,6 +126,6 @@ A401 已進一步緊縮版面：電路圖與 Rf 調整整合為同一欄位，�
 
 ## 公開至 GitHub Pages
 
-`.github/workflows/pages.yml` 會在推送至 `main` 時先驗證遊戲，再發布 `scripts/build-site.py` 產生的靜態網站。網站內容僅包含 HTML、CSS 與遊戲模組。GitHub 儲存庫的 Settings → Pages → Build and deployment → Source 請選 **GitHub Actions**；設定後可到 Actions 執行 **Publish game to GitHub Pages**。
+`.github/workflows/pages.yml` 會在推送至 `main` 時先驗證遊戲，再發布 `scripts/build-site.py` 產生的靜態網站。網站內容僅包含 HTML、CSS 與遊戲模組。部署工作會嘗試自動啟用 GitHub Pages。若儲存庫權限不允許自動啟用，請到 Settings → Pages → Build and deployment → Source 選 **GitHub Actions**，再到 Actions 執行 **Publish game to GitHub Pages**。
 
 發布成功後，網址預期為 `https://cindejhang.github.io/-/`，實際網址以部署工作輸出為準。
