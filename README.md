@@ -129,3 +129,7 @@ A401 已進一步緊縮版面：電路圖與 Rf 調整整合為同一欄位，�
 `.github/workflows/pages.yml` 會在推送至 `main` 時先驗證遊戲，再發布 `scripts/build-site.py` 產生的靜態網站。網站內容僅包含 HTML、CSS 與遊戲模組。部署工作會嘗試自動啟用 GitHub Pages。若儲存庫權限不允許自動啟用，請到 Settings → Pages → Build and deployment → Source 選 **GitHub Actions**，再到 Actions 執行 **Publish game to GitHub Pages**。
 
 發布成功後，分享網址為 `https://cindejhang.github.io/-/tcvsinfo/`；原本根路徑也保留遊戲。此路徑位於既有 `-` 儲存庫之下，並非新建儲存庫；實際是否公開以部署工作結果為準。
+
+## 地圖顯示方式
+
+地圖下方可切換「全景」與「部分樓層顯示」。全景一次顯示四層；部分模式依角色樓層自動顯示：一樓 → 1–2 樓，二樓 → 2–3 樓，三／四樓 → 3–4 樓。電腦預設全景，手機預設部分模式；明確選擇的模式會記住。手機部分模式可左右滑動查看放大的門牌、教室與樓梯，換樓後會將畫面帶到人物位置。畫面外的教室與樓梯不接收鍵盤焦點，主任只在可見樓層內顯示。

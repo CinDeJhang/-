@@ -22,3 +22,6 @@ export const directorLines = [
  '資訊科的未來工程師，加油！你的潛力就像雲端空間，只要願意學習，就能不斷擴充！'
 ];
 export function directorGreeting(random = Math.random) { return directorLines[Math.floor(random() * directorLines.length)] }
+
+export function visibleFloors(mode,floor){if(mode!=='partial')return [1,2,3,4];const first=Math.min(3,Math.max(1,Number.isInteger(floor)?floor:1));return [first,first+1]}
+export function mapViewBox(mode,floor){const shown=visibleFloors(mode,floor);return mode==='partial'?`95 ${floorY(shown[1])-105} 900 244`:'0 0 1100 690'}

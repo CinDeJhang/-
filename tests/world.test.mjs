@@ -1,8 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {floors,validName,roomPosition,floorY,directorGreeting,directorLines} from '../world.mjs';
+import {floors,validName,roomPosition,floorY,directorGreeting,directorLines,visibleFloors,mapViewBox} from '../world.mjs';
 test('nickname accepts only three or four Chinese characters',()=>{for(const name of ['陳小宇','大甲小玩家'])assert.equal(validName(name),name.length===3||name.length===4);assert.equal(validName('資訊小子'),true);for(const name of ['小明','王小明呀啊','abc','陳小1','陳 小明',''])assert.equal(validName(name),false)});
 test('building has the requested eight rooms and area ratios',()=>{assert.equal(floors.length,4);assert.deepEqual(floors.flatMap(f=>f.rooms.map(r=>r.id)),['office','team','A202','A201','A302','A301','A402','A401']);for(const f of floors)assert.equal(f.rooms.reduce((s,r)=>s+r.width,0),1);assert.equal(floors[0].rooms[0].width,2/3);for(const f of floors.slice(1))assert.deepEqual(f.rooms.map(r=>r.width),[.5,.5]);assert.ok(roomPosition(1,0)>roomPosition(2,0));assert.ok(floorY(4)<floorY(1))});
 
 test('rooms swap left and right on floors two through four, preserving room identities',()=>{assert.deepEqual(floors[1].rooms.map(r=>[r.code,r.name]),[['A202','應用軟體實習工場'],['A201','微電腦實習工場']]);assert.deepEqual(floors[2].rooms.map(r=>[r.code,r.name]),[['A302','電腦網路實習工場'],['A301','週邊電路實習工場']]);assert.deepEqual(floors[3].rooms.map(r=>[r.code,r.name]),[['A402','基電實驗工場'],['A401','電子實習工場']]);for(const f of [2,3,4])assert.ok(roomPosition(f,0)<roomPosition(f,1))});
 test('director can randomly choose all ten requested greetings',()=>{assert.equal(new Set(directorLines).size,10);for(let i=0;i<10;i++)assert.equal(directorGreeting(()=>(i+.5)/10),directorLines[i])});
+
+test('partial map follows the player and always includes exactly the requested floor pair',()=>{for(const [floor,pair]of [[1,[1,2]],[2,[2,3]],[3,[3,4]],[4,[3,4]]]){assert.deepEqual(visibleFloors('partial',floor),pair);assert.deepEqual(visibleFloors('full',floor),[1,2,3,4]);assert.ok(visibleFloors('partial',floor).includes(floor))}});
+test('map camera contains both visible floors and their doors, stairs and standing actors',()=>{assert.equal(mapViewBox('full',1),'0 0 1100 690');for(const floor of [1,2,3,4]){const [x,y,width,height]=mapViewBox('partial',floor).split(' ').map(Number);assert.ok(x<=135&&x+width>=986);for(const f of visibleFloors('partial',floor)){assert.ok(y<=floorY(f)-99);assert.ok(y+height>=floorY(f)+16)}}});
