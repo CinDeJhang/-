@@ -65,3 +65,5 @@ main{max-width:none;width:100%;padding:26px clamp(16px,2vw,48px) 28px}.game-layo
 @media(min-width:1600px){.card{padding:24px}.profile-row{margin:22px 0}.floor-item{padding:17px 10px}.floor-rooms{font-size:18px}.floor-rooms .mission-status{font-size:15px}.scene-top{height:54px}.tiny{font-size:16px}}
 @media(max-width:1000px){.game-layout{grid-template-columns:minmax(0,1fr) 285px;gap:16px}.floor-rooms{font-size:15px}#scene-note{display:none}}
 @media(max-width:730px){main{padding:20px 12px}.game-layout{grid-template-columns:1fr;gap:15px}.page-heading{margin-bottom:18px}.page-heading p{font-size:14px}.scene-top{font-size:14px;padding:0 12px}.note{font-size:15px}.floor-rooms{font-size:16px}.floor-rooms .mission-status{font-size:14px}.section-label>span{font-size:10px}}
+/* Each stair landing selects its floor. */
+#world [data-stair-floor]{cursor:pointer;outline:none}#world [data-stair-floor]:hover .stair-target{fill:#f7e9b52b}#world [data-stair-floor]:focus-visible .stair-target{fill:#f7e9b535;stroke:#efd18b;stroke-width:3}#world #player{pointer-events:none}
