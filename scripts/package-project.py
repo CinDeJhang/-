@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 
 root = Path(__file__).resolve().parents[1]
 subprocess.run([sys.executable, str(root / 'scripts/build-standalone.py')], check=True)
-files = sorted({p for pattern in ['*.js', '*.mjs', '*.html', '*.css', '*.json', '*.md', 'scripts/*.py', 'tests/*.mjs'] for p in root.glob(pattern) if p.is_file()})
+files = sorted({p for pattern in ['*.js', '*.mjs', '*.html', '*.css', '*.json', '*.md', 'scripts/*.py', 'tests/*.mjs', '.github/workflows/*.yml', '.gitignore'] for p in root.glob(pattern) if p.is_file()})
 for path in files:
     if path.suffix in {'.js', '.mjs'}:
         for name in re.findall(r"from\s+['\"](\./[^'\"]+)['\"]", path.read_text()):
